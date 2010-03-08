@@ -1,0 +1,15 @@
+﻿<Window x:Class="TeaTimer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="TeaTimer" Height="100" Width="500"
+    MinHeight="100" MinWidth="300"
+    WindowStartupLocation="CenterScreen"
+    ToolBarTray.IsLocked="False"
+    Loaded="Window_Loaded"
+    WindowStyle="SingleBorderWindow"
+    Closed="Window_Closed">
+    <Grid>
+        <ProgressBar Name="pbar"></ProgressBar>
+        <Label Name="plabel" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">0:00</Label>
+    </Grid>
+</Window>
