@@ -24,6 +24,7 @@ namespace TeaTimer {
     public partial class MainWindow : Window {
         private Thread bt;
         private NotifyIcon n;
+        private bool taskbarProgress;
 
         public MainWindow() {
             InitializeComponent();
@@ -42,6 +43,7 @@ namespace TeaTimer {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
+            this.taskbarProgress = TaskbarManager.IsPlatformSupported;
             tipbox.Text = "Tip: " + TipDatabase.GetTip();
             n = new NotifyIcon();
             n.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -60,7 +62,7 @@ namespace TeaTimer {
             DateTime start = DateTime.Now;
             DateTime end = start.AddMinutes(3);
             TimeSpan total = (end - start);
-            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Error);
+            if (taskbarProgress) TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Error);
             Dispatcher.BeginInvoke(new Action(() => { pbar.Maximum = total.Ticks; }));
             while (true) {
                 DateTime now = DateTime.Now;
@@ -70,12 +72,12 @@ namespace TeaTimer {
                 var reportText = String.Format("{0}:{1:D2}", remaining.Minutes, remaining.Seconds);
                 Dispatcher.BeginInvoke(new Action(() => { plabel.Content = reportText; }));
                 Dispatcher.BeginInvoke(new Action(() => { pbar.Value = progress.Ticks; }));
-                TaskbarManager.Instance.SetProgressValue((int)progress.Ticks, (int)total.Ticks);
+                if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)progress.Ticks, (int)total.Ticks);
                 Thread.Sleep(10);
             }
             Dispatcher.BeginInvoke(new Action(() => { plabel.Content = ":-D"; }));
             Dispatcher.BeginInvoke(new Action(() => { pbar.Value = total.Ticks; }));
-            TaskbarManager.Instance.SetProgressValue((int)total.Ticks, (int)total.Ticks);
+            if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)total.Ticks, (int)total.Ticks);
             var balloonTimeout = 1000 * 60 * 10; // 10 minutes
             Dispatcher.BeginInvoke(new Action(() => {
                 n.Visible = true;
