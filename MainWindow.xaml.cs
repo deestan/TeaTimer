@@ -25,6 +25,9 @@ namespace TeaTimer {
         private Thread bt;
         private NotifyIcon n;
         private bool taskbarProgress;
+        private bool progressInTitle;
+        private string origTitle;
+        private string progressTitle;
 
         public MainWindow() {
             InitializeComponent();
@@ -43,6 +46,7 @@ namespace TeaTimer {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
+            this.origTitle = this.Title;
             this.taskbarProgress = TaskbarManager.IsPlatformSupported;
             tipbox.Text = "Tip: " + TipDatabase.GetTip();
             n = new NotifyIcon();
@@ -70,6 +74,7 @@ namespace TeaTimer {
                 TimeSpan progress = (now - start);
                 TimeSpan remaining = (end - now).Add(TimeSpan.FromSeconds(1));
                 var reportText = String.Format("{0}:{1:D2}", remaining.Minutes, remaining.Seconds);
+                Dispatcher.BeginInvoke(new Action(() => { this.progressTitle = reportText; this.SetTitle(); }));
                 Dispatcher.BeginInvoke(new Action(() => { plabel.Content = reportText; }));
                 Dispatcher.BeginInvoke(new Action(() => { pbar.Value = progress.Ticks; }));
                 if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)progress.Ticks, (int)total.Ticks);
@@ -85,6 +90,18 @@ namespace TeaTimer {
             }));
             Thread.Sleep(balloonTimeout);
             Dispatcher.BeginInvoke(new Action(this.Close));
+        }
+
+        private void SetTitle() {
+            if (this.progressInTitle)
+                this.Title = this.progressTitle + " " + this.origTitle;
+            else
+                this.Title = this.origTitle;
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e) {
+            this.progressInTitle = this.WindowState == WindowState.Minimized;
+            this.SetTitle();
         }
     }
 }
