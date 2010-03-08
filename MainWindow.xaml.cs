@@ -78,7 +78,7 @@ namespace TeaTimer {
                 Dispatcher.BeginInvoke(new Action(() => { plabel.Content = reportText; }));
                 Dispatcher.BeginInvoke(new Action(() => { pbar.Value = progress.Ticks; }));
                 if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)progress.Ticks, (int)total.Ticks);
-                Thread.Sleep(10);
+                Thread.Sleep(100);
             }
             Dispatcher.BeginInvoke(new Action(() => { plabel.Content = ":-D"; }));
             Dispatcher.BeginInvoke(new Action(() => { pbar.Value = total.Ticks; }));
