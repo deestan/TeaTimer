@@ -42,6 +42,7 @@ namespace TeaTimer {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
+            tipbox.Text = "Tip: " + TipDatabase.GetTip();
             n = new NotifyIcon();
             n.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             n.Text = "TeaTimer";
