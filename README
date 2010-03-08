@@ -1,0 +1,4 @@
+How to build:
+ 1. Get ye Microsoft Visual C# 2008 Express Edition or some such.
+ 2. Download WindowsAPICodePack and extract folder here.
+ 3. Open solution file and go nuts.
