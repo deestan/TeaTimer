@@ -72,6 +72,7 @@ namespace TeaTimer {
                 TaskbarManager.Instance.SetProgressValue((int)progress.Ticks, (int)total.Ticks);
                 Thread.Sleep(10);
             }
+            Dispatcher.BeginInvoke(new Action(() => { plabel.Content = ":-D"; }));
             Dispatcher.BeginInvoke(new Action(() => { pbar.Value = total.Ticks; }));
             TaskbarManager.Instance.SetProgressValue((int)total.Ticks, (int)total.Ticks);
             var balloonTimeout = 1000 * 60 * 10; // 10 minutes
