@@ -62,14 +62,20 @@ namespace TeaTimer {
         }
 
         private void RunThread() {
+            bool turnedRed = false;
             if (Thread.CurrentThread != bt) throw new Exception("plz to run in background thread k?");
             DateTime start = DateTime.Now;
             DateTime end = start.AddMinutes(3);
+            DateTime almostDone = end.Subtract(TimeSpan.FromSeconds(10));
             TimeSpan total = (end - start);
-            if (taskbarProgress) TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Error);
+            if (taskbarProgress) TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
             Dispatcher.BeginInvoke(new Action(() => { pbar.Maximum = total.Ticks; }));
             while (true) {
                 DateTime now = DateTime.Now;
+                if (now > almostDone && !turnedRed) {
+                    if (taskbarProgress) TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Error);
+                    turnedRed = true;
+                }
                 if (now > end) break;
                 TimeSpan progress = (now - start);
                 TimeSpan remaining = (end - now).Add(TimeSpan.FromSeconds(1));
