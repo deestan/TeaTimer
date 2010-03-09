@@ -22,7 +22,7 @@ namespace TeaTimer {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        private Thread bt;
+        private Thread bt = null;
         private NotifyIcon n;
         private bool taskbarProgress;
         private bool progressInTitle;
@@ -46,7 +46,7 @@ namespace TeaTimer {
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            this.origTitle = this.Title;
+            this.origTitle = this.Title + " " + StartupParams.DurationDescription;
             this.taskbarProgress = TaskbarManager.IsPlatformSupported;
             tipbox.Text = "Tip: " + TipDatabase.GetTip();
             n = new NotifyIcon();
@@ -65,11 +65,10 @@ namespace TeaTimer {
             bool turnedRed = false;
             if (Thread.CurrentThread != bt) throw new Exception("plz to run in background thread k?");
             DateTime start = DateTime.Now;
-            DateTime end = start.AddMinutes(3);
+            DateTime end = (start + StartupParams.Duration);
             DateTime almostDone = end.Subtract(TimeSpan.FromSeconds(10));
-            TimeSpan total = (end - start);
             if (taskbarProgress) TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
-            Dispatcher.BeginInvoke(new Action(() => { pbar.Maximum = total.Ticks; }));
+            Dispatcher.BeginInvoke(new Action(() => { pbar.Maximum = StartupParams.Duration.Ticks; }));
             while (true) {
                 DateTime now = DateTime.Now;
                 if (now > almostDone && !turnedRed) {
@@ -83,12 +82,12 @@ namespace TeaTimer {
                 Dispatcher.BeginInvoke(new Action(() => { this.progressTitle = reportText; this.SetTitle(); }));
                 Dispatcher.BeginInvoke(new Action(() => { plabel.Content = reportText; }));
                 Dispatcher.BeginInvoke(new Action(() => { pbar.Value = progress.Ticks; }));
-                if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)progress.Ticks, (int)total.Ticks);
+                if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)progress.TotalMilliseconds, (int)StartupParams.Duration.TotalMilliseconds);
                 Thread.Sleep(100);
             }
             Dispatcher.BeginInvoke(new Action(() => { plabel.Content = ":-D"; }));
-            Dispatcher.BeginInvoke(new Action(() => { pbar.Value = total.Ticks; }));
-            if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)total.Ticks, (int)total.Ticks);
+            Dispatcher.BeginInvoke(new Action(() => { pbar.Value = StartupParams.Duration.Ticks; }));
+            if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)StartupParams.Duration.TotalMilliseconds, (int)StartupParams.Duration.TotalMilliseconds);
             var balloonTimeout = 1000 * 60 * 10; // 10 minutes
             Dispatcher.BeginInvoke(new Action(() => {
                 n.Visible = true;
