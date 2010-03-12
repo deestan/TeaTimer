@@ -28,6 +28,7 @@ namespace TeaTimer {
         private bool progressInTitle;
         private string origTitle;
         private string progressTitle;
+        private const int BALLOON_TIMEOUT = 1000 * 10; // 10 seconds
 
         public MainWindow() {
             InitializeComponent();
@@ -38,7 +39,7 @@ namespace TeaTimer {
         }
 
         void n_BalloonTipClosed(object sender, EventArgs e) {
-            this.Close();
+            n.ShowBalloonTip(BALLOON_TIMEOUT);
         }
 
         private void Window_Closed(object sender, EventArgs e) {
@@ -88,13 +89,10 @@ namespace TeaTimer {
             Dispatcher.BeginInvoke(new Action(() => { plabel.Content = ":-D"; }));
             Dispatcher.BeginInvoke(new Action(() => { pbar.Value = StartupParams.Duration.Ticks; }));
             if (taskbarProgress) TaskbarManager.Instance.SetProgressValue((int)StartupParams.Duration.TotalMilliseconds, (int)StartupParams.Duration.TotalMilliseconds);
-            var balloonTimeout = 1000 * 60 * 10; // 10 minutes
             Dispatcher.BeginInvoke(new Action(() => {
                 n.Visible = true;
-                n.ShowBalloonTip(balloonTimeout);
+                n.ShowBalloonTip(BALLOON_TIMEOUT);
             }));
-            Thread.Sleep(balloonTimeout);
-            Dispatcher.BeginInvoke(new Action(this.Close));
         }
 
         private void SetTitle() {
